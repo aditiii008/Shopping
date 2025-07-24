@@ -13,9 +13,12 @@ function toUiProduct(db: any): UiProduct {
   };
 }
 
-export default async function ProductPage({ params }: { params: { id: string } }) {
+export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+  // Await the params Promise in Next.js 15
+  const { id } = await params;
+  
   const dbProduct = await prisma.product.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!dbProduct) {
