@@ -1,11 +1,14 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useCartStore } from "@/store/cart-store";
 import Link from "next/link";
 
-export default function SuccessPage() {
+export const dynamic = "force-dynamic";
+
+function SuccessContent() {
   const params = useSearchParams();
   const paymentId = params.get("payment_id");
   const orderId = params.get("order_id");
@@ -36,5 +39,22 @@ export default function SuccessPage() {
         View My Orders
       </Link>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="container mx-auto px-4 py-20 text-center bg-[#FFFAF5] text-[#3D3D3D]">
+      <h1 className="font-playfair text-4xl font-bold mb-4">Processing...</h1>
+      <p className="mb-4">Confirming your payment...</p>
+    </div>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <SuccessContent />
+    </Suspense>
   );
 }

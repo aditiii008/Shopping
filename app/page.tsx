@@ -12,6 +12,7 @@ function toUiProduct(db: any): UiProduct {
     description: db.description ?? undefined,
     price: db.price,
     image: db.image || "/placeholder.png",
+    stock: db.stock, // Add this missing property
   };
 }
 
@@ -31,7 +32,7 @@ export default async function Home() {
           {/* Text Content */}
           <div className="max-w-md space-y-5">
             <h2 className="text-3xl font-bold leading-tight tracking-tight font-playfair">
-              Uncover your skin’s true story
+              Uncover your skin&apos;s true story
             </h2>
             <p className="text-[#5a5a5a] text-base">
               Reveal the real you and say bye to your skin problems by discovering
