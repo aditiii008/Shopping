@@ -2,6 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { ProductList } from "@/components/product-list";
 import type { UiProduct } from "@/types/product";
 
+
+export const dynamic = "force-dynamic";
+
 function toUiProduct(db: any): UiProduct {
   return {
     id: db.id,
@@ -9,7 +12,7 @@ function toUiProduct(db: any): UiProduct {
     description: db.description ?? undefined,
     price: db.price,
     image: db.image || "/placeholder.png",
-    stock: db.stock, // Include stock
+    stock: db.stock,
   };
 }
 
