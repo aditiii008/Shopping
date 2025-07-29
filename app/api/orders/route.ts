@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
-// GET - Fetch all orders (optional: filter by email if provided)
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const email = searchParams.get("email");
@@ -14,7 +14,7 @@ export async function GET(req: Request) {
   return NextResponse.json(orders);
 }
 
-// POST - Create a new order and store customer info
+
 export async function POST(req: Request) {
   try {
     const { products, total, customerName, customerEmail, customerAddress } =
@@ -43,6 +43,36 @@ export async function POST(req: Request) {
     console.error("Order creation error:", error);
     return NextResponse.json(
       { success: false, error: "Order creation failed" },
+      { status: 500 }
+    );
+  }
+}
+
+
+export async function PATCH(req: Request) {
+  try {
+    const { orderId, status, trackingUrl } = await req.json();
+
+    if (!orderId || !status) {
+      return NextResponse.json(
+        { error: "Missing order ID or status" },
+        { status: 400 }
+      );
+    }
+
+    const updated = await db.order.update({
+      where: { id: orderId },
+      data: {
+        status,
+        trackingUrl: trackingUrl || null,
+      },
+    });
+
+    return NextResponse.json({ success: true, order: updated });
+  } catch (error) {
+    console.error("Order update error:", error);
+    return NextResponse.json(
+      { success: false, error: "Order update failed" },
       { status: 500 }
     );
   }

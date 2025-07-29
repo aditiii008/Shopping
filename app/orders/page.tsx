@@ -1,8 +1,6 @@
 import { db } from "@/lib/db";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-
-// Get the session from your custom session logic
 import { getSession } from "@/lib/session";
 
 interface ProductItem {
@@ -14,14 +12,11 @@ interface ProductItem {
 }
 
 export default async function OrdersPage() {
-  // 1. Get session
   const session = await getSession();
   if (!session || !session.email) {
-    // If not logged in, redirect to sign-in
     redirect("/sign-in");
   }
 
-  // 2. Fetch orders for this user only
   const orders = await db.order.findMany({
     where: {
       customerEmail: session.email,
@@ -72,38 +67,51 @@ export default async function OrdersPage() {
             >
               <div className="space-y-2">
                 <p className="font-semibold">Order ID: {o.id}</p>
-                <p>Status: {o.status}</p>
+
+                <div className="flex items-center gap-2">
+                  <p>Status: {o.status}</p>
+                  {o.status === "SHIPPED" && o.trackingUrl && (
+                    <a
+                      href={o.trackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 inline-block px-3 py-1 bg-[#B1856D] text-white text-xs rounded hover:bg-[#9d6d54] transition"
+                    >
+                      Track Your Order
+                    </a>
+                  )}
+                </div>
+
                 <p>Total: ₹{(o.total / 100).toFixed(2)}</p>
-                
 
-                
-                {o.customerAddress && (() => {
-                  let addr: any = o.customerAddress;
-                  try {
-                    if (typeof o.customerAddress === "string") {
-                      addr = JSON.parse(o.customerAddress);
+                {o.customerAddress &&
+                  (() => {
+                    let addr: any = o.customerAddress;
+                    try {
+                      if (typeof o.customerAddress === "string") {
+                        addr = JSON.parse(o.customerAddress);
+                      }
+                    } catch {
+                      return (
+                        <p className="text-sm break-words whitespace-pre-wrap leading-relaxed">
+                          {o.customerAddress}
+                        </p>
+                      );
                     }
-                  } catch {
-                    return (
-                      <p className="text-sm break-words whitespace-pre-wrap leading-relaxed">
-                        {o.customerAddress}
-                      </p>
-                    );
-                  }
 
-                  return (
-                    <div className="text-sm break-words whitespace-pre-wrap leading-relaxed">
-                      {addr.fullName && <p>{addr.fullName}</p>}
-                      {addr.street && <p>{addr.street}</p>}
-                      <p>
-                        {addr.city && addr.city}, {addr.state && addr.state}{" "}
-                        {addr.postalCode && addr.postalCode}
-                      </p>
-                      {addr.country && <p>{addr.country}</p>}
-                      {addr.phone && <p>{addr.phone}</p>}
-                    </div>
-                  );
-                })()}
+                    return (
+                      <div className="text-sm break-words whitespace-pre-wrap leading-relaxed">
+                        {addr.fullName && <p>{addr.fullName}</p>}
+                        {addr.street && <p>{addr.street}</p>}
+                        <p>
+                          {addr.city && addr.city}, {addr.state && addr.state}{" "}
+                          {addr.postalCode && addr.postalCode}
+                        </p>
+                        {addr.country && <p>{addr.country}</p>}
+                        {addr.phone && <p>{addr.phone}</p>}
+                      </div>
+                    );
+                  })()}
 
                 <p className="text-xs text-gray-600">
                   Placed on {new Date(o.createdAt).toLocaleString()}
@@ -112,9 +120,14 @@ export default async function OrdersPage() {
                 {products.length > 0 && (
                   <div className="space-y-4 mt-4">
                     {products.map((item) => (
-                      <div key={item.id} className="border-b border-[#D2BAA8] pb-3">
+                      <div
+                        key={item.id}
+                        className="border-b border-[#D2BAA8] pb-3"
+                      >
                         <p className="font-medium">{item.name}</p>
-                        <p className="text-sm text-gray-700">Qty: {item.quantity}</p>
+                        <p className="text-sm text-gray-700">
+                          Qty: {item.quantity}
+                        </p>
                         <p className="font-semibold text-[#B1856D]">
                           ₹{((item.price * item.quantity) / 100).toFixed(2)}
                         </p>

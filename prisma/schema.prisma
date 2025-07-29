@@ -46,12 +46,14 @@ model Order {
   id              String   @id @default(cuid())
   total           Int
   status          String   @default("PENDING")
+  trackingUrl     String?  
   products        Json
   customerName    String
   customerEmail   String
   customerPhone   String?
   customerAddress String?
-  userId          String?   // optional link to User account
+  userId          String?   
   user            User?     @relation(fields: [userId], references: [id])
   createdAt       DateTime @default(now())
 }
+
