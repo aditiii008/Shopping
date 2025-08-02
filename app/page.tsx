@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"; 
+
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -12,7 +14,7 @@ function toUiProduct(db: any): UiProduct {
     description: db.description ?? undefined,
     price: db.price,
     image: db.image || "/placeholder.png",
-    stock: db.stock, // Add this missing property
+    stock: db.stock,
   };
 }
 
@@ -26,10 +28,10 @@ export default async function Home() {
 
   return (
     <div className="bg-[#FFFAF5] text-[#313131]">
-      {/* Hero Section */}
+      
       <section className="py-12 bg-[#E8D8C3]">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 px-6 sm:px-10 items-center">
-          {/* Text Content */}
+          
           <div className="max-w-md space-y-5">
             <h2 className="text-3xl font-bold leading-tight tracking-tight font-playfair">
               Uncover your skin&apos;s true story
@@ -46,7 +48,7 @@ export default async function Home() {
             </Button>
           </div>
 
-          {/* Hero Image */}
+          
           {products[0] && (
             <Image
               alt={products[0].name}
@@ -59,7 +61,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Carousel Section */}
+      
       {products.length > 0 && (
         <section className="py-12 bg-[#FFFAF5]">
           <Carousel products={products} />
